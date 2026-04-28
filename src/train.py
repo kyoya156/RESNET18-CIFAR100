@@ -56,12 +56,16 @@ def train_one_epoch(model, loader, criterion, optimizer, device):
 def main():
     #  Config 
     batch_size  = 64
-    num_epochs  = 200
+    num_epochs  = 100
     lr          = 0.1
-    save_path   = 'resnet18_cifar100.pth'
+    save_path   = 'resnet18.pth'
 
-    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    # Enforce GPU usage
+    if not torch.cuda.is_available():
+        raise RuntimeError("CUDA is not available. GPU is required for training.")
+    device = torch.device('cuda')
     print(f"Using device: {device}")
+    print(f"GPU: {torch.cuda.get_device_name(0)}")
 
     # Data 
     train_loader, test_loader = get_cifar100_loaders(batch_size=batch_size)

@@ -7,7 +7,7 @@ def save_model(model, filepath):
     print(f"Model saved to {filepath}")
 
 
-def load_model(model, filepath, device='cpu'):
+def load_model(model, filepath, device='cuda'):
     """Load model weights from filepath. map_location ensures CPU-trained
     models load on GPU and vice-versa without crashing."""
     model.load_state_dict(torch.load(filepath, map_location=device))

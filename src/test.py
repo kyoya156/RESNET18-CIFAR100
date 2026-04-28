@@ -17,7 +17,7 @@ def get_test_loader(batch_size=100, num_workers=4):
                                        pin_memory=True)
 
 
-def main(model_path='resnet18_cifar100.pth'):
+def main(model_path='resnet18.pth'):
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     print(f"Using device: {device}")
 
@@ -34,7 +34,7 @@ def main(model_path='resnet18_cifar100.pth'):
 if __name__ == '__main__':
     import argparse
     parser = argparse.ArgumentParser()
-    parser.add_argument('--model_path', type=str, default='resnet18_cifar100.pth',
+    parser.add_argument('--model_path', type=str, default='resnet18.pth',
                         help='Path to saved model weights')
     args = parser.parse_args()
     main(model_path=args.model_path)
