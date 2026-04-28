@@ -73,7 +73,7 @@ def main():
     lr          = 0.1
     patience    = 10  # Early stopping patience
     save_path   = 'resnet18.pth'
-    dropout_rate = 0.2  # Dropout rate for regularization
+    dropout_rate = 0.5  # Dropout rate for regularization
 
     # Enforce GPU usage
     if not torch.cuda.is_available():
