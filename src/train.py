@@ -103,7 +103,9 @@ def main():
         train_loss, train_acc = train_one_epoch(model, train_loader,
                                                 criterion, optimizer, device, 
                                                 epoch, num_epochs)
-        test_acc = compute_accuracy(model, test_loader, device) * 100
+        accs = compute_accuracy(model, test_loader, device)
+        test_acc  = accs[1] * 100
+        test_acc5 = accs[5] * 100
         scheduler.step()
 
         # Save best checkpoint
@@ -118,9 +120,9 @@ def main():
         # Print progress with indicator for model save
         save_indicator = "NEW BEST MODEL SAVED" if is_best else f"({patience_counter}/{patience}) BRUH"
         print(f"Epoch {epoch:3d}/{num_epochs} | "
-              f"Train: loss={train_loss:.3f} acc={train_acc:.1f}% | "
-              f"Val: acc={test_acc:.1f}% | "
-              f"Best: {best_acc:.1f}% {save_indicator}")
+            f"Train: loss={train_loss:.3f} acc={train_acc:.1f}% | "
+            f"Val: top1={test_acc:.1f}% top5={test_acc5:.1f}% | "
+            f"Best top1: {best_acc:.1f}% {save_indicator}")
         
         # Early stopping
         if patience_counter >= patience:
