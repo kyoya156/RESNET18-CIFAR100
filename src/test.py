@@ -27,8 +27,11 @@ def main(model_path='resnet18.pth'):
 
     test_loader = get_test_loader()
 
-    accuracy = compute_accuracy(model, test_loader, device) * 100
-    print(f"Test accuracy: {accuracy:.2f}%")
+    accs = compute_accuracy(model, test_loader, device)
+    acc  = accs[1] * 100
+    acc5 = accs[5] * 100
+    print(f"Test accuracy: {acc:.2f}%")
+    print(f"Test accuracy (top-5): {acc5:.2f}%")
 
 
 if __name__ == '__main__':
