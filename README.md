@@ -12,10 +12,10 @@ resnet18-cifar100
 │   ├── test.py         # Script for testing the model
 │   └── utils.py        # Utility functions for data handling and model management
 ├── data
-│   └── README.md       # Information about the CIFAR-100 dataset
-├── requirements.txt     # List of project dependencies
-├── .gitignore           # Files and directories to ignore in Git
-└── README.md            # Project documentation
+│   └── README.md       # store the downloaded CIFAR-100 dataset on first run
+├── requirements.txt    # List of project dependencies
+├── .gitignore          # Files and directories to ignore in Git
+└── README.md           # Project documentation
 ```
 
 ## Setup

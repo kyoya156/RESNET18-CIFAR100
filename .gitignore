@@ -60,6 +60,10 @@ htmlcov/
 
 #src folder
 src/__pycache__/*
+<<<<<<< HEAD
+=======
+src/**/__pycache__/
+>>>>>>> 83a9a815c86f8f3501bc465456b091679a948413
 src/**/*.pyc
 src/**/*.pyo
 src/**/*.pyd
