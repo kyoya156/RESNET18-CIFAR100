@@ -1,0 +1,1 @@
+This is the place the the program stores CIFAR-100 dataset download triggered by running the file train.py the first time
