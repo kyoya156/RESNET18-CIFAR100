@@ -3,6 +3,7 @@ import torch.nn as nn
 import torch.optim as optim
 import torchvision
 import torchvision.transforms as transforms
+from tqdm import tqdm
 
 from model import ResNet18
 from utils import save_model, compute_accuracy
@@ -34,10 +35,12 @@ def get_cifar100_loaders(batch_size=128, num_workers=4):
     return train_loader, test_loader
 
 
-def train_one_epoch(model, loader, criterion, optimizer, device):
+def train_one_epoch(model, loader, criterion, optimizer, device, epoch=1, num_epochs=1):
     model.train()
     total_loss, correct, total = 0.0, 0, 0
-    for inputs, labels in loader:
+    
+    pbar = tqdm(loader, desc=f"Epoch {epoch}/{num_epochs} [TRAIN]", leave=False)
+    for inputs, labels in pbar:
         inputs, labels = inputs.to(device), labels.to(device)
 
         optimizer.zero_grad()
@@ -49,6 +52,11 @@ def train_one_epoch(model, loader, criterion, optimizer, device):
         total_loss += loss.item() * inputs.size(0)
         correct    += outputs.argmax(1).eq(labels).sum().item()
         total      += inputs.size(0)
+        
+        # Update progress bar with running accuracy and loss
+        batch_acc = 100.0 * correct / total
+        batch_loss = total_loss / total
+        pbar.set_postfix({'loss': f'{batch_loss:.3f}', 'acc': f'{batch_acc:.1f}%'})
 
     return total_loss / total, 100.0 * correct / total
 
@@ -85,22 +93,29 @@ def main():
     best_acc = 0.0
     for epoch in range(1, num_epochs + 1):
         train_loss, train_acc = train_one_epoch(model, train_loader,
-                                                criterion, optimizer, device)
+                                                criterion, optimizer, device, 
+                                                epoch, num_epochs)
         test_acc = compute_accuracy(model, test_loader, device) * 100
         scheduler.step()
 
-        if epoch % 10 == 0:
-            print(f"Epoch {epoch:3d}/{num_epochs} | "
-                  f"Train loss {train_loss:.3f}  acc {train_acc:.1f}% | "
-                  f"Test acc {test_acc:.1f}%")
-
         # Save best checkpoint
-        if test_acc > best_acc:
+        is_best = test_acc > best_acc
+        if is_best:
             best_acc = test_acc
             save_model(model, save_path)
+        
+        # Print progress with indicator for model save
+        save_indicator = " NEW BEST MODEL SAVED" if is_best else "bruh"
+        print(f"Epoch {epoch:3d}/{num_epochs} | "
+              f"Train: loss={train_loss:.3f} acc={train_acc:.1f}% | "
+              f"Val: acc={test_acc:.1f}% | "
+              f"Best: {best_acc:.1f}% {save_indicator}")
 
-    print(f"\nTraining complete. Best test accuracy: {best_acc:.2f}%")
-    print(f"Best model saved to {save_path}")
+    print(f"\n{'='*70}")
+    print(f"Training complete!")
+    print(f"Best test accuracy: {best_acc:.2f}%")
+    print(f"Best model saved to: {save_path}")
+    print(f"{'='*70}")
 
 
 if __name__ == '__main__':
