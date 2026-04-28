@@ -33,7 +33,7 @@ class BasicBlock(nn.Module):
 
 
 class ResNet18(nn.Module):
-    def __init__(self, num_classes=100):
+    def __init__(self, num_classes=100, dropout_rate=0.5):
         super(ResNet18, self).__init__()
         self.in_channels = 64
 
@@ -49,6 +49,7 @@ class ResNet18(nn.Module):
         self.layer4 = self._make_layer(512, stride=2, num_blocks=2)
 
         self.avgpool = nn.AdaptiveAvgPool2d((1, 1))
+        self.dropout = nn.Dropout(dropout_rate)  # Dropout before FC
         self.fc = nn.Linear(512, num_classes)
 
         # Kaiming init for conv layers; BN init to identity
@@ -76,5 +77,6 @@ class ResNet18(nn.Module):
         x = self.layer4(x)                       # (B, 512,  4,  4)
         x = self.avgpool(x)                      # (B, 512,  1,  1)
         x = torch.flatten(x, 1)                  # (B, 512)
+        x = self.dropout(x)                      # Apply dropout before FC
         x = self.fc(x)                           # (B, 100)
         return x

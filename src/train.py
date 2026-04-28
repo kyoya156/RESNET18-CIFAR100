@@ -10,10 +10,14 @@ from utils import save_model, compute_accuracy
 
 def get_cifar100_loaders(batch_size=128, num_workers=4):
     train_transform = transforms.Compose([
-        transforms.RandomCrop(32, padding=4),        # standard CIFAR augmentation
+        transforms.RandomCrop(32, padding=4),
         transforms.RandomHorizontalFlip(),
-        transforms.ColorJitter(brightness=0.2, contrast=0.2, saturation=0.2),
+        transforms.RandomRotation(15),  # Rotate ±15 degrees
+        # transforms.ColorJitter(brightness=0.3, contrast=0.3, saturation=0.3, hue=0.1),
+        # transforms.GaussianBlur(kernel_size=3, sigma=(0.1, 2.0)),
+        # transforms.RandomAffine(degrees=0, translate=(0.1, 0.1)),
         transforms.ToTensor(),
+        transforms.RandomErasing(p=0.3, scale=(0.02, 0.3)),  # Cutout-like augmentation
         transforms.Normalize((0.5071, 0.4867, 0.4408), (0.2675, 0.2565, 0.2761)),
     ])
     test_transform = transforms.Compose([
@@ -63,11 +67,13 @@ def train_one_epoch(model, loader, criterion, optimizer, device, epoch=1, num_ep
 
 def main():
     #  Config 
+    num_classes = 100
     batch_size  = 64
     num_epochs  = 100
     lr          = 0.1
     patience    = 10  # Early stopping patience
     save_path   = 'resnet18.pth'
+    dropout_rate = 0.2  # Dropout rate for regularization
 
     # Enforce GPU usage
     if not torch.cuda.is_available():
@@ -80,7 +86,7 @@ def main():
     train_loader, test_loader = get_cifar100_loaders(batch_size=batch_size)
 
     # Model 
-    model = ResNet18(num_classes=100).to(device)
+    model = ResNet18(num_classes=num_classes, dropout_rate=dropout_rate).to(device)
 
     # Loss / Optimiser / Scheduler 
     criterion = nn.CrossEntropyLoss()
