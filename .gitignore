@@ -57,3 +57,12 @@ data/*
 .coverage
 htmlcov/
 *.log
+
+#src folder
+src/**/__pycache__/
+src/**/*.pyc
+src/**/*.pyo
+src/**/*.pyd
+
+#saved_models folder
+saved_models/*
