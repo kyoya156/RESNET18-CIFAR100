@@ -66,6 +66,7 @@ def main():
     batch_size  = 64
     num_epochs  = 100
     lr          = 0.1
+    patience    = 10  # Early stopping patience
     save_path   = 'resnet18.pth'
 
     # Enforce GPU usage
@@ -91,6 +92,7 @@ def main():
 
     # Training loop 
     best_acc = 0.0
+    patience_counter = 0
     for epoch in range(1, num_epochs + 1):
         train_loss, train_acc = train_one_epoch(model, train_loader,
                                                 criterion, optimizer, device, 
@@ -103,13 +105,21 @@ def main():
         if is_best:
             best_acc = test_acc
             save_model(model, save_path)
+            patience_counter = 0  # Reset patience on improvement
+        else:
+            patience_counter += 1
         
         # Print progress with indicator for model save
-        save_indicator = " NEW BEST MODEL SAVED" if is_best else "bruh"
+        save_indicator = "NEW BEST MODEL SAVED" if is_best else f"({patience_counter}/{patience}) BRUH"
         print(f"Epoch {epoch:3d}/{num_epochs} | "
               f"Train: loss={train_loss:.3f} acc={train_acc:.1f}% | "
               f"Val: acc={test_acc:.1f}% | "
               f"Best: {best_acc:.1f}% {save_indicator}")
+        
+        # Early stopping
+        if patience_counter >= patience:
+            print(f"\nNo improvement for {patience} epochs. Stopping training early.")
+            break
 
     print(f"\n{'='*70}")
     print(f"Training complete!")
