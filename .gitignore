@@ -59,10 +59,12 @@ htmlcov/
 *.log
 
 #src folder
-src/**/__pycache__/
+src/__pycache__/*
 src/**/*.pyc
 src/**/*.pyo
 src/**/*.pyd
+src/__pycache__/model.cpython-39.pyc
+src/__pycache__/utils.cpython-39.pyc
 
 #saved_models folder
 saved_models/*
