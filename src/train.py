@@ -8,7 +8,7 @@ from tqdm import tqdm
 from model import ResNet18
 from utils import save_model, compute_accuracy
 
-def get_cifar100_loaders(batch_size=128, num_workers=4):
+def get_cifar100_loaders(batch_size=128, num_workers=0,):
     train_transform = transforms.Compose([
         transforms.RandomCrop(32, padding=4),
         transforms.RandomHorizontalFlip(),
@@ -17,7 +17,7 @@ def get_cifar100_loaders(batch_size=128, num_workers=4):
         # transforms.GaussianBlur(kernel_size=3, sigma=(0.1, 2.0)),
         # transforms.RandomAffine(degrees=0, translate=(0.1, 0.1)),
         transforms.ToTensor(),
-        transforms.RandomErasing(p=0.3, scale=(0.02, 0.3)),  # Cutout-like augmentation
+        # transforms.RandomErasing(p=0.3, scale=(0.02, 0.3)),  # Cutout-like augmentation
         transforms.Normalize((0.5071, 0.4867, 0.4408), (0.2675, 0.2565, 0.2761)),
     ])
     test_transform = transforms.Compose([
@@ -68,12 +68,13 @@ def train_one_epoch(model, loader, criterion, optimizer, device, epoch=1, num_ep
 def main():
     #  Config 
     num_classes = 100
-    batch_size  = 64
+    batch_size  = 128
     num_epochs  = 100
     lr          = 0.1
-    patience    = 10  # Early stopping patience
+    patience    = 15  # Early stopping patience
+    num_workers = 8
     save_path   = 'resnet18.pth'
-    dropout_rate = 0.5  # Dropout rate for regularization
+    dropout_rate = 0.0 # Dropout set to 0 as this only worsens the accuracy tried with 0.2 0.5
 
     # Enforce GPU usage
     if not torch.cuda.is_available():
@@ -83,7 +84,7 @@ def main():
     print(f"GPU: {torch.cuda.get_device_name(0)}")
 
     # Data 
-    train_loader, test_loader = get_cifar100_loaders(batch_size=batch_size)
+    train_loader, test_loader = get_cifar100_loaders(batch_size=batch_size, num_workers=num_workers)
 
     # Model 
     model = ResNet18(num_classes=num_classes, dropout_rate=dropout_rate).to(device)
