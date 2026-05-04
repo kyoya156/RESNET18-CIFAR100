@@ -68,3 +68,5 @@ src/__pycache__/utils.cpython-39.pyc
 
 #saved_models folder
 saved_models/*
+
+predictions.png
